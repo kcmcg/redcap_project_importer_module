@@ -1,0 +1,23 @@
+{
+	"name": "REDCap Project Importer",
+	"namespace": "KCMcG\\ProjectImporter",
+	"framework-version": 15,
+	"description": "This project allows downloading multiple projects via API along with the data",
+	"authors": [
+		{
+			"name": "Kyle McGuffin",
+			"email": "kmcguffin@gmail.com",
+			"institution": "Vanderbilt University Medical Center"
+		}
+	],
+	"links": {
+		"control-center": [
+			{
+				"name": "Project Importer",
+				"icon": "fa fa-download",
+				"url": "project_import.php",
+				"show-header-and-footer": true
+			}
+		]
+	}
+}
