@@ -5,6 +5,34 @@ namespace KCMcG\ProjectImporter;
 class ProjectImporter extends \ExternalModules\AbstractExternalModule {
 	public $url;
 	private $apiKeys = [];
+	## TODO Need to figure out what types of errors we can get and catch them
+	public function copyProject($apiKey,$allowDuplicates = false) {
+		$q = $this->queryLogs("SELECT created_project WHERE token = ?", [$apiKey]);
+		if($row = db_fetch_assoc($q)) {
+			var_dump($row);echo "<br />";
+			$projectId = $row["project_id"];
+			if(!$allowDuplicates) {
+				return $projectId;
+			}
+		}
+		
+		$projectId = $this->copyProjectStructure($apiKey);
+
+		echo "Project ID is: $projectId";
+	}
+
+	public function copyProjectStructure($apiKey) {
+		$projectXml = $this->fetchProjectXml($apiKey);
+		if($projectXml) {
+			$projectId = $this->createProjectFromXml($projectXml);
+
+			if($projectId) {
+				$this->log("Project Created",["token" => $apiKey,"created_project" => $projectId]);
+				return $projectId;
+			}
+		}
+		return false;	
+	}
 
 	public function fetchProjectXml($apiKey) {
 		$requestBody = [
@@ -47,7 +75,20 @@ class ProjectImporter extends \ExternalModules\AbstractExternalModule {
 		curl_setopt($ch, CURLOPT_COOKIE, session_name() . '=' . session_id());
 
 		$output = curl_exec($ch);
-	var_dump($output);
+		
+		$finalUrl = curl_getinfo($ch)["url"];
+		$newProjectString = strpos($finalUrl, "msg=newproject");
+		$createProjectSuccess = $newProjectSting !== false;
+
+		if($createProjectSuccess) {
+			$projectId = false;
+			## Find project ID of new project
+			if(preg_match("/pid=([0-9]+)/", $finalUrl, $matches)) {
+				$projectId = $matches[1];
+			}
+			return $projectId;
+		}
+		return false;
 	}
 	
 	public function buildMinCurlCall($url) {

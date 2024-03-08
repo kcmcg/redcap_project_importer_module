@@ -1,12 +1,13 @@
 <?php
-
 $module->url = $_POST['url'];
-$apiToken = $_POST['api_token'];
+$apiKey = $_POST['api_key'];
 
-$output = $module->fetchProjectXml($apiToken);
-$module->createProjectFromXml($output);
+if($module->url && $apiKey) {
+	$module->copyProject($apiKey);
+}
 
 ?>
+<form method="POST">
 <table>
 	<tbody>
 		<tr>
@@ -15,8 +16,12 @@ $module->createProjectFromXml($output);
 		</tr>
 		<tr>
 			<td><span>API Token to Import</span></td>
-			<td><input type='text' name='api_token' value='<?=$module->escape($apiToken)?>' /></td>
+			<td><input type='text' name='api_key' value='<?=$module->escape($apiKey)?>' /></td>
+		</tr>
+		<tr>
+			<td colspan=2><input type="submit" value="Submit" /></td>
 		</tr>
 	</tbody>
 </table>
+</form>
 
